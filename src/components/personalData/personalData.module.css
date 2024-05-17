@@ -1,0 +1,26 @@
+.wrap {
+	font: inherit;
+	letter-spacing: inherit;
+
+	padding: 4px 0 5px;
+
+	/* box-sizing: content-box; */
+	background: none;
+	height: 1.4375em;
+	margin: 0;
+	-webkit-tap-highlight-color: transparent;
+	display: block;
+	min-width: 0;
+	width: 100%;
+	margin-bottom: 30px;
+}
+
+.text {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+	padding-bottom: 5px;
+}
+
+.element {
+	font-size: 13px;
+	color: rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,7 @@
+.imgBlock img {
+	width: 400px;
+	height: 400px;
+}
+.imgBlock {
+	margin: 0 auto;
+}
