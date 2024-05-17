@@ -12,6 +12,7 @@ import { MuiTelInput } from "mui-tel-input";
 import { API_URL } from "../../http";
 import { PersonalData } from "../../components/personalData/PersonalData";
 import { useSnackbar, VariantType } from "notistack";
+import { CookiesDelete } from "../../store/store";
 
 type PropsType = {
 	role: RoleType;
@@ -62,17 +63,25 @@ const handleValid = (obj: ValidType) => {
 
 export const Organization: React.FC<PropsType> = observer(({ role }) => {
 	const inputFileRef = React.useRef<null | HTMLInputElement>(null);
-	const [phone, setPhone] = React.useState(accStore.org.phoneNumber);
+	const [phone, setPhone] = React.useState<string>(accStore.org.phoneNumber);
 	const [email, setEmail] = React.useState<string>(accStore.org.email);
 	const [accNumber, setAccNumber] = React.useState<string>(accStore.org.accNumber);
 	const [description, setDescription] = React.useState<string>(accStore.org.description);
 	const [address, setAddress] = React.useState<string>(accStore.org.address);
 	const { enqueueSnackbar } = useSnackbar();
-	// React.useEffect(() => {
-	// 	(async () => {
-	// 		await accStore.fetchOrg(1);
-	// 	})();
-	// }, []);
+	React.useEffect(() => {
+		if (performance.navigation.type == 1) {
+			CookiesDelete();
+		}
+		(async () => {
+			await accStore.fetchOrg(1);
+			setPhone(accStore.org.phoneNumber);
+			setEmail(accStore.org.email);
+			setAccNumber(accStore.org.accNumber);
+			setDescription(accStore.org.description);
+			setAddress(accStore.org.address);
+		})();
+	}, []);
 	const handleChangePhone = (newValue: string) => {
 		setPhone(newValue);
 	};

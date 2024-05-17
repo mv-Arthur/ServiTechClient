@@ -12,6 +12,7 @@ import { API_URL } from "../../http";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useSnackbar, VariantType } from "notistack";
+import { CookiesDelete } from "../../store/store";
 
 type ObjValidType = {
 	phone: string;
@@ -31,6 +32,22 @@ export const Office = observer(() => {
 	const [surname, setSurname] = React.useState<string>(store.personal.surname);
 	const [patronymic, setPatronymic] = React.useState<string>(store.personal.patronymic);
 	const [file, setFile] = React.useState<any>(null);
+	const [isLoading, setIsLoading] = React.useState(true);
+	React.useEffect(() => {
+		if (performance.navigation.type == 1) {
+			CookiesDelete();
+		}
+
+		store.checkAuth().then(() => {
+			setName(store.personal.name);
+			setSurname(store.personal.surname);
+			setPatronymic(store.personal.patronymic);
+			setPhone(store.personal.phoneNumber);
+			setIsLoading(false);
+		});
+
+		return () => CookiesDelete();
+	}, []);
 
 	const setSnackBartoQueue = (variant: VariantType, message: string) => () => {
 		enqueueSnackbar(message, { variant });
@@ -64,7 +81,7 @@ export const Office = observer(() => {
 
 		return false;
 	};
-	console.log(phone.length);
+	console.log(store.personal);
 	const onSubmit = async () => {
 		const valid = handleValid({
 			name,
@@ -89,97 +106,102 @@ export const Office = observer(() => {
 		}
 	};
 
-	console.log(store.personal);
 	return (
 		<Container>
-			<div className={classes.wrapper}>
-				<div className={classes.left}>
-					<div className={classes.avatarWrapper}>
-						<img
-							src={
-								!store.personal.avatar
-									? defaultAvatar
-									: `${API_URL}/uploads/${store.personal.avatar}`
-							}
-							alt=""
+			{isLoading ? (
+				<div>загрузка</div>
+			) : (
+				<div className={classes.wrapper}>
+					<div className={classes.left}>
+						<div className={classes.avatarWrapper}>
+							<img
+								src={
+									!store.personal.avatar
+										? defaultAvatar
+										: `${API_URL}/uploads/${store.personal.avatar}`
+								}
+								alt=""
+							/>
+							<Typography style={{ textAlign: "center", marginBottom: 15 }}>
+								{file && file.name ? file.name : null}
+							</Typography>
+							<input
+								onChange={async (e) => {
+									if (e.currentTarget.files) {
+										// setFile(e.currentTarget.files[0]);
+										const formData = new FormData();
+										formData.append("userId", String(store.user.id));
+										formData.append("file", e.currentTarget.files[0]);
+										await store.editAvatar(formData);
+										// setFile(null);
+									}
+								}}
+								ref={inputFileRef}
+								type="file"
+								style={{ display: "none" }}
+							/>
+							<Button
+								onClick={() => {
+									if (inputFileRef && inputFileRef.current) {
+										inputFileRef.current.click();
+									}
+								}}
+								variant="outlined"
+							>
+								Изменить <EditIcon style={{ marginLeft: "10px" }} />
+							</Button>
+						</div>
+					</div>
+					<div className={classes.right}>
+						<TextField
+							value={surname}
+							onChange={(e) => setSurname(e.currentTarget.value)}
+							id="standard-basic"
+							label="Фамилия"
+							variant="standard"
 						/>
-						<Typography style={{ textAlign: "center", marginBottom: 15 }}>
-							{file && file.name ? file.name : null}
+						<TextField
+							value={name}
+							onChange={(e) => setName(e.currentTarget.value)}
+							id="standard-basic"
+							label="Имя"
+							variant="standard"
+						/>
+						<TextField
+							value={patronymic}
+							onChange={(e) => setPatronymic(e.currentTarget.value)}
+							id="standard-basic"
+							label="Отчество"
+							variant="standard"
+						/>
+						<MuiTelInput
+							label="Номер телефона"
+							style={{ marginTop: "20px" }}
+							value={phone}
+							onChange={handleChangePhone}
+						/>
+						<Typography style={{ marginTop: "10px" }}>
+							тип аккаунта{" "}
+							{store.user.isActivated ? (
+								<span style={{ fontWeight: 900 }}>
+									подтвержденный{" "}
+									<CheckCircleIcon
+										style={{ fill: "green", transform: "translateY(6px)" }}
+									/>
+								</span>
+							) : (
+								<span style={{ fontWeight: 900 }}>
+									не подтвержденный{" "}
+									<WarningIcon style={{ fill: "red", transform: "translateY(6px)" }} />
+								</span>
+							)}
 						</Typography>
-						<input
-							onChange={async (e) => {
-								if (e.currentTarget.files) {
-									// setFile(e.currentTarget.files[0]);
-									const formData = new FormData();
-									formData.append("userId", String(store.user.id));
-									formData.append("file", e.currentTarget.files[0]);
-									await store.editAvatar(formData);
-									// setFile(null);
-								}
-							}}
-							ref={inputFileRef}
-							type="file"
-							style={{ display: "none" }}
-						/>
-						<Button
-							onClick={() => {
-								if (inputFileRef && inputFileRef.current) {
-									inputFileRef.current.click();
-								}
-							}}
-							variant="outlined"
-						>
-							Изменить <EditIcon style={{ marginLeft: "10px" }} />
+						<Button style={{ marginTop: "20px" }} onClick={onSubmit}>
+							сохранить
 						</Button>
 					</div>
 				</div>
-				<div className={classes.right}>
-					<TextField
-						value={surname}
-						onChange={(e) => setSurname(e.currentTarget.value)}
-						id="standard-basic"
-						label="Фамилия"
-						variant="standard"
-					/>
-					<TextField
-						value={name}
-						onChange={(e) => setName(e.currentTarget.value)}
-						id="standard-basic"
-						label="Имя"
-						variant="standard"
-					/>
-					<TextField
-						value={patronymic}
-						onChange={(e) => setPatronymic(e.currentTarget.value)}
-						id="standard-basic"
-						label="Отчество"
-						variant="standard"
-					/>
-					<MuiTelInput
-						label="Номер телефона"
-						style={{ marginTop: "20px" }}
-						value={phone}
-						onChange={handleChangePhone}
-					/>
-					<Typography style={{ marginTop: "10px" }}>
-						тип аккаунта{" "}
-						{store.user.isActivated ? (
-							<span style={{ fontWeight: 900 }}>
-								подтвержденный{" "}
-								<CheckCircleIcon style={{ fill: "green", transform: "translateY(6px)" }} />
-							</span>
-						) : (
-							<span style={{ fontWeight: 900 }}>
-								не подтвержденный{" "}
-								<WarningIcon style={{ fill: "red", transform: "translateY(6px)" }} />
-							</span>
-						)}
-					</Typography>
-					<Button style={{ marginTop: "20px" }} onClick={onSubmit}>
-						сохранить
-					</Button>
-				</div>
-			</div>
+			)}
 		</Container>
 	);
 });

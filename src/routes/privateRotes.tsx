@@ -17,6 +17,8 @@ import { Organization } from "../pages/organization/Organization";
 import { typeStore } from "../store/typeStore";
 import { FullType } from "../pages/fullType/FullType";
 import { orderAdminStore } from "../store/orderAdminStore";
+import { CookiesDelete } from "../store/store";
+import { TypesPage } from "../pages/TypesPage";
 
 const PrivateRoutes: React.FC = () => {
 	const { store } = useContext(Context);
@@ -45,34 +47,9 @@ const PrivateRoutes: React.FC = () => {
 				<Route path={"/"} element={<LoginPage />} />
 				<Route path={"/office"} element={<Office />} />
 				<Route path="/organization" element={<Organization role={store.user.role} />} />
-				{store.user.role === "admin" ? (
-					<Route
-						path={"/types"}
-						element={
-							<Container>
-								<CreateTypeForm />
 
-								<TypesArea />
-							</Container>
-						}
-					/>
-				) : (
-					<Route
-						path="/types"
-						element={
-							<Container>
-								<Typography style={{ marginTop: "10px" }} variant="h4">
-									Поддерживаемые услуги
-								</Typography>
-								<Typography>
-									цена может меняться в зависимости от сложности и обьема работ
-								</Typography>
+				<Route path={"/types"} element={<TypesPage isAdmin={store.user.role === "admin"} />} />
 
-								<TypesArea user />
-							</Container>
-						}
-					/>
-				)}
 				{store.user.role === "admin" && <Route path="/types/:id" element={<FullType />} />}
 			</Routes>
 		</div>

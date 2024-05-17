@@ -16,7 +16,6 @@ function App() {
 			(async () => {
 				await store.checkAuth();
 				await accStore.fetchOrg(1);
-
 				// navigate("/office");
 			})();
 		}

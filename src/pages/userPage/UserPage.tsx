@@ -9,6 +9,7 @@ import Container from "@mui/material/Container";
 import classes from "./userPage.module.css";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { TypeCard } from "../../components/TypeCard";
+import { CookiesDelete } from "../../store/store";
 const UserPage: React.FC = () => {
 	const { store } = useContext(Context);
 	const [parent] = useAutoAnimate();
@@ -19,8 +20,9 @@ const UserPage: React.FC = () => {
 			await orderStore.fetchOrders(store.user.id);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
+		return () => CookiesDelete();
 	}, []);
-	console.log(!!typeStore.current.description);
+
 	return (
 		<div className={classes.body}>
 			{store.isLoading ? (
