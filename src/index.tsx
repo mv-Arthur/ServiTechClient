@@ -5,7 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Store from "./store/store";
 import { BrowserRouter } from "react-router-dom";
-
+import { HashRouter } from "react-router-dom";
 interface State {
 	store: Store;
 }
@@ -38,9 +38,9 @@ root.render(
 			store,
 		}}
 	>
-		<BrowserRouter>
+		<HashRouter>
 			<App />
-		</BrowserRouter>
+		</HashRouter>
 	</Context.Provider>
 );
 
