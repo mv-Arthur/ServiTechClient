@@ -1,7 +1,10 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { IOrderType } from "../models/IOrderType";
+import { IOrderType, IType } from "../models/IOrderType";
 import { OrderTypeService } from "../services/OrderTypeService";
 import { AsyncActionReturnType } from "../models/asynActionsReturnType";
+import { OrderAdminService } from "../services/OrderAdminService";
+import { ErrorModel, orderAdminStore } from "./orderAdminStore";
+import { isAxiosError } from "axios";
 
 class TypeStore {
 	types = [] as IOrderType[];
@@ -29,22 +32,62 @@ class TypeStore {
 		}
 	}
 
-	async fetchToDelete(id: number): Promise<AsyncActionReturnType> {
+	updateType(id: number, updated: IType) {
+		this.types = this.types.map((type) => {
+			if (type.id === id) return { ...type, ...updated };
+			return type;
+		});
+	}
+
+	updateTypePicture(id: number, fileName: string) {
+		this.types = this.types.map((type) => {
+			if (type.id === id) return { ...type, fileName };
+			return type;
+		});
+	}
+
+	async fetchToUpdatePicture(id: number, formData: FormData) {
+		try {
+			const response = await OrderAdminService.updateTypePicture(id, formData);
+			this.updateTypePicture(response.data.id, response.data.fileName);
+			orderAdminStore.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				orderAdminStore.setSnackBar({
+					children: err.response?.data.message,
+					severity: "error",
+				});
+			}
+		}
+	}
+
+	async fetchToUpdateType(id: number, updated: IType) {
+		try {
+			const response = await OrderAdminService.updateType(id, updated);
+			this.updateType(response.data.id, response.data.requestedData);
+			orderAdminStore.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				orderAdminStore.setSnackBar({
+					children: err.response?.data.message,
+					severity: "error",
+				});
+			}
+		}
+	}
+
+	async fetchToDelete(id: number) {
 		try {
 			const response = await OrderTypeService.deleteById(id);
 			this.deleteTypeById(response.data.deletedTypeId);
-			const result: AsyncActionReturnType = {
-				message: "Успешно удален",
-				variant: "success",
-			};
-			return result;
-		} catch (err: any) {
-			const result: AsyncActionReturnType = {
-				message: "непредвиденная ошибка, попробуйте повторить запрос позже",
-				variant: "error",
-			};
-
-			return result;
+			orderAdminStore.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				orderAdminStore.setSnackBar({
+					children: err.response?.data.message,
+					severity: "error",
+				});
+			}
 		}
 	}
 

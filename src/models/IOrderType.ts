@@ -1,12 +1,18 @@
-export interface IOrderType {
+import { AddOrderResponse } from "./response/AddOrderResponse";
+
+export interface IOrderType extends IType {
 	id: number;
-	name: string;
+
 	type: string;
 	fileName: string;
+}
+
+export interface IType {
+	name: string;
 	description: string;
 	minPrice: string;
 }
 
-export interface DeletedType {
+export interface DeletedType extends AddOrderResponse {
 	deletedTypeId: number;
 }

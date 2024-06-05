@@ -13,8 +13,6 @@ type PropsType = {
 };
 
 const CustomRouter: React.FC<PropsType> = (props) => {
-	const { store } = useContext(Context);
-
 	return <>{props.isAuth ? <PrivateRoutes /> : <PublicRoutes />}</>;
 };
 

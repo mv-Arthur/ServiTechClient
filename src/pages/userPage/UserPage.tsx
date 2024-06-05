@@ -9,18 +9,22 @@ import Container from "@mui/material/Container";
 import classes from "./userPage.module.css";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { TypeCard } from "../../components/TypeCard";
-import { CookiesDelete } from "../../store/store";
+import { operatorStore } from "../../store/operatorStore";
+import { roleForGetOrdersToOperator } from "../../services/OperatorService";
+
 const UserPage: React.FC = () => {
 	const { store } = useContext(Context);
 	const [parent] = useAutoAnimate();
 	React.useEffect(() => {
 		(async () => {
-			await store.checkAuth();
 			await typeStore.fetchTypes();
 			await orderStore.fetchOrders(store.user.id);
+			await operatorStore.fetchToSetOrders(
+				store.user.id,
+				store.user.role as roleForGetOrdersToOperator
+			);
 		})();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		return () => CookiesDelete();
 	}, []);
 
 	return (

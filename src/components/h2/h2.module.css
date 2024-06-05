@@ -1,0 +1,43 @@
+.rightHeader {
+	padding-left: 10px;
+	font-weight: 200;
+	font-size: 30px;
+	display: inline-block;
+	position: relative;
+}
+
+.rightHeader::after {
+	content: "";
+	display: block;
+	width: 250px;
+	height: 8px;
+	z-index: -1;
+	background-color: #1976d2;
+	position: absolute;
+
+	right: 0;
+	transform: translate(7px, -12px);
+	border-radius: 2px;
+}
+
+.dungerous {
+	padding-left: 10px;
+	font-weight: 200;
+	font-size: 30px;
+	display: inline-block;
+	position: relative;
+}
+
+.dungerous::after {
+	content: "";
+	display: block;
+	width: 250px;
+	height: 8px;
+	z-index: -1;
+	background-color: #e02c53;
+	position: absolute;
+
+	right: 0;
+	transform: translate(7px, -12px);
+	border-radius: 2px;
+}

@@ -1,11 +1,22 @@
 import { makeAutoObservable } from "mobx";
-import { GetAllOrdersResponse } from "../models/response/GetAllOrdersResponse";
+import {
+	GetAllOrdersResponse,
+	Settings,
+	setTypeSettingsBody,
+} from "../models/response/GetAllOrdersResponse";
 import { OrderAdminService } from "../services/OrderAdminService";
 import { RoleType } from "../models/RoleType";
-import { Order } from "../models/IOrder";
+import { isAxiosError } from "axios";
+import { AlertProps } from "@mui/material/Alert";
+
+export interface ErrorModel {
+	message: string;
+	statusCode: string;
+}
 
 class OrderAdminStore {
 	ordersForUsers = [] as GetAllOrdersResponse[];
+	snackbar: Pick<AlertProps, "children" | "severity"> | null = null;
 
 	constructor() {
 		makeAutoObservable(this, {}, { deep: true });
@@ -23,6 +34,25 @@ class OrderAdminStore {
 					return order.status === "pending" || order.status === "job";
 				}),
 			};
+		});
+	}
+
+	setSnackBar(data: Pick<AlertProps, "children" | "severity"> | null) {
+		this.snackbar = data;
+	}
+
+	attachType(userId: number, typeId: number) {
+		this.ordersForUsers = this.ordersForUsers.map((user) => {
+			if (user.id === userId) return { ...user, typeId: typeId };
+			return user;
+		});
+	}
+
+	//typeid is require in param
+	unattachType(id: number) {
+		this.ordersForUsers = this.ordersForUsers.map((user) => {
+			if (user.typeId === id) return { ...user, typeId: null };
+			return user;
 		});
 	}
 
@@ -56,6 +86,66 @@ class OrderAdminStore {
 		});
 	}
 
+	setSettings(body: Settings) {
+		this.ordersForUsers = this.ordersForUsers.map((user) => {
+			if (user.id === body.userId) {
+				return { ...user, operatorSettings: body };
+			}
+
+			return user;
+		});
+	}
+
+	async fetchToSetSettings(body: setTypeSettingsBody) {
+		try {
+			const response = await OrderAdminService.setTypesSetting(body);
+			this.setSettings(response.data.operatorSettings);
+			this.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				this.setSnackBar({ children: err.response?.data.message, severity: "error" });
+			}
+		}
+	}
+
+	async fetchToUpdateSettings(body: setTypeSettingsBody) {
+		try {
+			const response = await OrderAdminService.updateTypesSettings(body);
+			this.setSettings(response.data.operatorSettings);
+			this.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				this.setSnackBar({ children: err.response?.data.message, severity: "error" });
+			}
+		}
+	}
+
+	//typeid is require in param
+	async fetchToUnattach(id: number) {
+		try {
+			const response = await OrderAdminService.unattachType(id);
+			this.unattachType(response.data.id);
+			this.setSnackBar({ children: response.data.message, severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				this.setSnackBar({ children: err.response?.data.message, severity: "error" });
+			}
+		}
+	}
+
+	async fetchToAttach(userId: number, typeId: number) {
+		try {
+			const response = await OrderAdminService.attachType(userId, typeId);
+
+			this.attachType(response.data.userId, response.data.typeId);
+			this.setSnackBar({ children: "успешно прикреплен", severity: "success" });
+		} catch (err) {
+			if (isAxiosError<ErrorModel>(err)) {
+				this.setSnackBar({ children: err.response?.data.message, severity: "error" });
+			}
+		}
+	}
+
 	async fetchToSelectRole(role: RoleType, id: number) {
 		try {
 			const response = await OrderAdminService.switchRole(id, role);
@@ -87,6 +177,7 @@ class OrderAdminStore {
 		try {
 			const response = await OrderAdminService.getAllOrders();
 			this.addMany(response.data);
+
 			return response;
 		} catch (err) {
 			console.log(err);

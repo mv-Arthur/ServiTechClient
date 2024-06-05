@@ -12,7 +12,6 @@ import { API_URL } from "../../http";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useSnackbar, VariantType } from "notistack";
-import { CookiesDelete } from "../../store/store";
 
 type ObjValidType = {
 	phone: string;
@@ -25,35 +24,26 @@ type ObjValidType = {
 export const Office = observer(() => {
 	const { store } = useContext(Context);
 	const inputFileRef = React.useRef<null | HTMLInputElement>(null);
-	console.log(store.personal);
+
 	const { enqueueSnackbar } = useSnackbar();
 	const [phone, setPhone] = React.useState(store.personal.phoneNumber);
 	const [name, setName] = React.useState<string>(store.personal.name);
 	const [surname, setSurname] = React.useState<string>(store.personal.surname);
 	const [patronymic, setPatronymic] = React.useState<string>(store.personal.patronymic);
 	const [file, setFile] = React.useState<any>(null);
-	const [isLoading, setIsLoading] = React.useState(true);
+	const [isLoading, setIsLoading] = React.useState(false);
 	React.useEffect(() => {
-		if (performance.navigation.type == 1) {
-			CookiesDelete();
-		}
-
-		store.checkAuth().then(() => {
-			setName(store.personal.name);
-			setSurname(store.personal.surname);
-			setPatronymic(store.personal.patronymic);
-			setPhone(store.personal.phoneNumber);
-			setIsLoading(false);
-		});
-
-		return () => CookiesDelete();
+		// setName(store.personal.name);
+		// setSurname(store.personal.surname);
+		// setPatronymic(store.personal.patronymic);
+		// setPhone(store.personal.phoneNumber);
+		// setIsLoading(false);
 	}, []);
 
 	const setSnackBartoQueue = (variant: VariantType, message: string) => () => {
 		enqueueSnackbar(message, { variant });
 	};
 	const handleChangePhone = (newValue: string) => {
-		console.log(newValue.length);
 		setPhone(newValue);
 	};
 
@@ -81,7 +71,7 @@ export const Office = observer(() => {
 
 		return false;
 	};
-	console.log(store.personal);
+
 	const onSubmit = async () => {
 		const valid = handleValid({
 			name,

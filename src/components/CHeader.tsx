@@ -74,6 +74,49 @@ const CHeader = () => {
 		</Box>
 	);
 
+	const OperatorDrawnerList = (
+		<Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+			<List>
+				<ListItem disablePadding>
+					<ListItemButton onClick={() => navigate("/types")}>
+						<ListItemIcon>
+							{" "}
+							<TypeSpecimenIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Типы"} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem disablePadding>
+					<ListItemButton onClick={() => navigate("/user")}>
+						<ListItemIcon>
+							{" "}
+							<SupervisedUserCircleIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Заявки"} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem disablePadding>
+					<ListItemButton onClick={() => navigate("/office")}>
+						<ListItemIcon>
+							{" "}
+							<HomeIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Личный кабинет"} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem disablePadding>
+					<ListItemButton onClick={() => navigate("/organization")}>
+						<ListItemIcon>
+							{" "}
+							<ApartmentIcon />
+						</ListItemIcon>
+						<ListItemText primary={"О компании"} />
+					</ListItemButton>
+				</ListItem>
+			</List>
+		</Box>
+	);
+
 	const DrawerListUser = (
 		<Box sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
 			<List>
@@ -164,12 +207,14 @@ const CHeader = () => {
 		if (role === "user") return "Пользователь";
 		if (role === "accounting") return "Бухгалтер";
 		if (role === "admin") return "Администратор";
+		if (role === "operator") return "Оператор";
 	};
 
 	const choiseT = (role: RoleType) => {
 		if (role === "user") return DrawerListUser;
 		if (role === "accounting") return DrawnerListAcc;
 		if (role === "admin") return DrawerList;
+		if (role === "operator") return OperatorDrawnerList;
 	};
 
 	return (

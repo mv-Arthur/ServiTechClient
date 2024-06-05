@@ -130,6 +130,9 @@
 	display: flex;
 	align-items: center;
 	gap: 20px;
+	cursor: pointer;
+	padding: 10px 10px 10px 10px;
+	border-radius: 10px;
 }
 
 .operator img {
@@ -152,4 +155,63 @@
 .phoneNumber {
 	font-weight: 200;
 	font-size: 17px;
+}
+
+.rightHeader {
+	padding-left: 10px;
+	font-weight: 200;
+	font-size: 30px;
+	display: inline-block;
+	position: relative;
+}
+
+.rightHeader::after {
+	content: "";
+	display: block;
+	width: 250px;
+	height: 8px;
+	z-index: -1;
+	background-color: #1976d2;
+	position: absolute;
+
+	right: 0;
+	transform: translate(7px, -12px);
+	border-radius: 2px;
+}
+
+.attachedOperator {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 10px;
+	padding: 10px;
+	margin-right: 10px;
+}
+
+.attachedOperator img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+}
+
+.attachedTextWrap {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.attachedPersonal {
+	font-weight: 400;
+	font-size: 25px;
+}
+
+.attachedPhoneNumber {
+	font-size: 18px;
+	font-weight: 200;
+}
+
+.attachedInfoBlock {
+	display: flex;
+	gap: 20px;
+	align-items: center;
 }

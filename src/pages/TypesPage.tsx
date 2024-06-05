@@ -2,7 +2,7 @@ import { Container, Typography } from "@mui/material";
 import React, { useContext } from "react";
 import { CreateTypeForm } from "../components/createTypeForm/CreateTypeForm";
 import { TypesArea } from "../components/typesArea/TypesArea";
-import { CookiesDelete } from "../store/store";
+
 import { observer } from "mobx-react-lite";
 import { typeStore } from "../store/typeStore";
 import { Context } from "..";
@@ -15,15 +15,10 @@ type PropsType = {
 export const TypesPage: React.FC<PropsType> = observer(({ isAdmin }) => {
 	const { store } = useContext(Context);
 	React.useEffect(() => {
-		if (performance.navigation.type == 1) {
-			CookiesDelete();
-		}
 		(async () => {
 			await store.checkAuth();
 			await typeStore.fetchTypes();
 		})();
-
-		return () => CookiesDelete();
 	});
 
 	let choise = null;

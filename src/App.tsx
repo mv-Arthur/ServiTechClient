@@ -6,7 +6,8 @@ import CustomRouter from "./routes/routes";
 import { Context } from ".";
 import { useNavigate } from "react-router-dom";
 import { accStore } from "./store/accStore";
-import { orderAdminStore } from "./store/orderAdminStore";
+import { API_URL } from "./http";
+import { io, Socket } from "socket.io-client";
 
 function App() {
 	const { store } = useContext(Context);
@@ -16,7 +17,7 @@ function App() {
 			(async () => {
 				await store.checkAuth();
 				await accStore.fetchOrg(1);
-				// navigate("/office");
+				navigate("/office");
 			})();
 		}
 

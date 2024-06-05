@@ -4,16 +4,8 @@ import { AuthService } from "../services/AuthService";
 import axios from "axios";
 import { AuthResponse, Personal } from "../models/response/AuthResponse";
 import { API_URL } from "../http";
-export const CookiesDelete = () => {
-	let cookies = document.cookie.split(";");
-	for (var i = 0; i < cookies.length; i++) {
-		let cookie = cookies[i];
-		let eqPos = cookie.indexOf("=");
-		let name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-		document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;";
-		document.cookie = name + "=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-	}
-};
+import { Socket } from "socket.io-client";
+
 export default class Store {
 	user = {} as IUser;
 	isAuth = false;
@@ -133,6 +125,7 @@ export default class Store {
 				message: "ok",
 			};
 		} catch (err: any) {
+			console.log(err);
 			return {
 				status: false,
 				message: err.response.data.length ? err.response.data[0] : err.response.data.message,
@@ -209,8 +202,6 @@ export default class Store {
 			this.setAuth(false);
 			this.setUser({} as IUser);
 			this.setPersonal({} as Personal);
-
-			CookiesDelete();
 		} catch (err: any) {
 			console.log(err?.response?.data);
 		}
