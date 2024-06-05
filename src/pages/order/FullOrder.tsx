@@ -190,12 +190,29 @@ export const FullOrder = observer(() => {
 								style={{ width: "80%", marginTop: "5px" }}
 								onChange={onSetStatus}
 							>
-								<MenuItem disabled={order?.status === "job"} value={"pending"}>
+								<MenuItem
+									disabled={
+										order?.status === "job" ||
+										order?.status === "rejected" ||
+										order?.status === "resolved"
+									}
+									value={"pending"}
+								>
 									Ожидает принятия
 								</MenuItem>
-								<MenuItem value={"job"}>В работе</MenuItem>
+								<MenuItem
+									disabled={order?.status === "rejected" || order?.status === "resolved"}
+									value={"job"}
+								>
+									В работе
+								</MenuItem>
 								<MenuItem value={"resolved"}>Выполнен</MenuItem>
-								<MenuItem value={"rejected"}>Отклонен</MenuItem>
+								<MenuItem
+									disabled={order?.status === "job" || order?.status === "resolved"}
+									value={"rejected"}
+								>
+									Отклонен
+								</MenuItem>
 							</Select>
 						</div>
 					) : (
@@ -221,16 +238,18 @@ export const FullOrder = observer(() => {
 								gap: "10px",
 							}}
 						>
-							<div style={{ fontSize: "20px", fontWeight: 200 }}>
-								{store.user.role === "operator"
-									? "Осталось времени для выполнения"
-									: "Заказ будет готов примерно через"}
-							</div>
-							<div style={{ fontSize: "25px" }}>
-								{order.operatorSettings.fulfillmentTime.split(" ")[0]}:
-								{order.operatorSettings.fulfillmentTime.split(" ")[1]}:
-								{order.operatorSettings.fulfillmentTime.split(" ")[2]}
-							</div>
+							{store.user.role === "operator" && (
+								<>
+									<div style={{ fontSize: "20px", fontWeight: 200 }}>
+										Осталось времени для выполнения
+									</div>
+									<div style={{ fontSize: "25px" }}>
+										{order.operatorSettings.fulfillmentTime.split(" ")[0]}:
+										{order.operatorSettings.fulfillmentTime.split(" ")[1]}:
+										{order.operatorSettings.fulfillmentTime.split(" ")[2]}
+									</div>
+								</>
+							)}
 						</div>
 					)}
 				</div>
