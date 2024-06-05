@@ -190,7 +190,9 @@ export const FullOrder = observer(() => {
 								style={{ width: "80%", marginTop: "5px" }}
 								onChange={onSetStatus}
 							>
-								<MenuItem value={"pending"}>Ожидает принятия</MenuItem>
+								<MenuItem disabled={order?.status === "job"} value={"pending"}>
+									Ожидает принятия
+								</MenuItem>
 								<MenuItem value={"job"}>В работе</MenuItem>
 								<MenuItem value={"resolved"}>Выполнен</MenuItem>
 								<MenuItem value={"rejected"}>Отклонен</MenuItem>
