@@ -5,14 +5,14 @@ import defaultAvatar from "../../static/defaultAvatar.jpg";
 import { observer } from "mobx-react-lite";
 import { API_URL } from "../../http";
 import {
-	Button,
-	FormControl,
-	InputLabel,
-	MenuItem,
-	Select,
-	SelectChangeEvent,
-	TextField,
-	Typography,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  Typography,
 } from "@mui/material";
 import { orderAdminStore } from "../../store/orderAdminStore";
 import { OrderComponent } from "../Order";
@@ -22,159 +22,179 @@ import { typeStore } from "../../store/typeStore";
 import { formItemStyle } from "../createOrderForm/CreateOrderForm";
 import { RoleType } from "../../models/RoleType";
 type Props = {
-	currentUser: GetAllOrdersResponse | undefined;
-	handleDownload: (id: number) => void;
-	handleGet: (status: string, price: string, id: number) => void;
-	handleChangeRole: (role: RoleType) => void;
+  currentUser: GetAllOrdersResponse | undefined;
+  handleDownload: (id: number) => void;
+  handleGet: (status: string, price: string, id: number) => void;
+  handleChangeRole: (role: RoleType) => void;
 };
 
 export const UserArea: React.FC<Props> = observer(
-	({ currentUser, handleDownload, handleGet, handleChangeRole }) => {
-		const [filter, setFilter] = React.useState("all");
-		const [statusFilter, setStatusFilter] = React.useState("all");
-		const [serarchString, setSearchString] = React.useState("");
-		const handleValid = () => {
-			if (currentUser && currentUser.personal) {
-				const { name, surname, patronymic, phoneNumber } = currentUser.personal;
+  ({ currentUser, handleDownload, handleGet, handleChangeRole }) => {
+    const [filter, setFilter] = React.useState("all");
+    const [statusFilter, setStatusFilter] = React.useState("all");
+    const [serarchString, setSearchString] = React.useState("");
+    const handleValid = () => {
+      if (currentUser && currentUser.personal) {
+        const { name, surname, patronymic, phoneNumber } = currentUser.personal;
 
-				if (!name || !surname || !patronymic || !phoneNumber) {
-					return true;
-				}
-			}
-		};
-		const handleChange = (event: SelectChangeEvent) => {
-			setFilter(event.target.value as string);
-		};
+        if (!name || !surname || !patronymic || !phoneNumber) {
+          return true;
+        }
+      }
+    };
+    const handleChange = (event: SelectChangeEvent) => {
+      setFilter(event.target.value as string);
+    };
 
-		const handleChangeStatus = (event: SelectChangeEvent) => {
-			setStatusFilter(event.target.value as string);
-		};
+    const handleChangeStatus = (event: SelectChangeEvent) => {
+      setStatusFilter(event.target.value as string);
+    };
 
-		let filteredOrders = currentUser?.order;
-		if (filter !== "all" && filteredOrders)
-			filteredOrders = filteredOrders.filter((order) => {
-				return filter === order.type;
-			});
+    let filteredOrders = currentUser?.order;
+    if (filter !== "all" && filteredOrders)
+      filteredOrders = filteredOrders.filter((order) => {
+        return filter === order.type;
+      });
 
-		if (statusFilter !== "all" && filteredOrders)
-			filteredOrders = filteredOrders.filter((order) => {
-				return order.status === statusFilter;
-			});
+    if (statusFilter !== "all" && filteredOrders)
+      filteredOrders = filteredOrders.filter((order) => {
+        return order.status === statusFilter;
+      });
 
-		if (filteredOrders)
-			filteredOrders = filteredOrders.filter((order) => {
-				const exp = order.description.toLowerCase().includes(serarchString.toLowerCase());
-				return exp;
-			});
+    if (filteredOrders)
+      filteredOrders = filteredOrders.filter((order) => {
+        const exp = order.description
+          .toLowerCase()
+          .includes(serarchString.toLowerCase());
+        return exp;
+      });
 
-		return (
-			<>
-				{!currentUser ? (
-					<div className={classes.imgBlock}>
-						<Typography style={{ fontWeight: 100 }} variant="h4">
-							нет активных пользователей
-						</Typography>
-						<img src={userImg} alt="" />
-					</div>
-				) : (
-					currentUser && (
-						<div className={classes.personal}>
-							<div className={classes.personalLeft}>
-								<img
-									src={
-										currentUser.personal.avatar
-											? `${API_URL}/uploads/${currentUser.personal.avatar}`
-											: defaultAvatar
-									}
-									alt="avatar"
-								/>
-							</div>
-							<div className={classes.personalRight}>
-								{!handleValid() ? (
-									<>
-										<Typography>
-											Фамилия{" "}
-											<span style={{ fontWeight: 900 }}>
-												{currentUser.personal.surname}
-											</span>
-										</Typography>
-										<Typography>
-											Имя{" "}
-											<span style={{ fontWeight: 900 }}>
-												{currentUser.personal.name}
-											</span>
-										</Typography>
-										<Typography>
-											Отчество{" "}
-											<span style={{ fontWeight: 900 }}>
-												{currentUser.personal.patronymic}
-											</span>
-										</Typography>
-										<Typography>
-											Номер телефона{" "}
-											<span style={{ fontWeight: 900 }}>
-												{currentUser.personal.phoneNumber}
-											</span>
-										</Typography>
-									</>
-								) : (
-									<Typography>пользователь не заполнил личные данные</Typography>
-								)}
-								<div style={{ display: "flex", gap: "5px", marginTop: "10px" }}>
-									<Button
-										onClick={async () => {
-											await orderAdminStore.fetchToSelectRole("admin", currentUser.id);
-											handleChangeRole("admin");
-										}}
-										variant={currentUser.role === "admin" ? "contained" : "outlined"}
-									>
-										Администратор
-									</Button>
-									<Button
-										onClick={async () => {
-											await orderAdminStore.fetchToSelectRole(
-												"accounting",
-												currentUser.id
-											);
-											handleChangeRole("accounting");
-										}}
-										variant={currentUser.role === "accounting" ? "contained" : "outlined"}
-									>
-										Бухгалтер
-									</Button>
-									<Button
-										onClick={async () => {
-											await orderAdminStore.fetchToSelectRole("user", currentUser.id);
-											handleChangeRole("user");
-										}}
-										variant={currentUser.role === "user" ? "contained" : "outlined"}
-									>
-										Пользователь
-									</Button>
-									<Button
-										onClick={async () => {
-											await orderAdminStore.fetchToSelectRole(
-												"operator",
-												currentUser.id
-											);
-											handleChangeRole("operator");
-										}}
-										variant={currentUser.role === "operator" ? "contained" : "outlined"}
-									>
-										Оператор
-									</Button>
-								</div>
-							</div>
-						</div>
-					)
-				)}
-				<div>
+    return (
+      <>
+        {!currentUser ? (
+          <div className={classes.imgBlock}>
+            <Typography style={{ fontWeight: 100 }} variant="h4">
+              нет активных пользователей
+            </Typography>
+            <img src={userImg} alt="" />
+          </div>
+        ) : (
+          currentUser && (
+            <div className={classes.personal}>
+              <div className={classes.personalLeft}>
+                <img
+                  src={
+                    currentUser.personal.avatar
+                      ? `${API_URL}/uploads/${currentUser.personal.avatar}`
+                      : defaultAvatar
+                  }
+                  alt="avatar"
+                />
+              </div>
+              <div className={classes.personalRight}>
+                {!handleValid() ? (
+                  <>
+                    <Typography>
+                      Фамилия{" "}
+                      <span style={{ fontWeight: 900 }}>
+                        {currentUser.personal.surname}
+                      </span>
+                    </Typography>
+                    <Typography>
+                      Имя{" "}
+                      <span style={{ fontWeight: 900 }}>
+                        {currentUser.personal.name}
+                      </span>
+                    </Typography>
+                    <Typography>
+                      Отчество{" "}
+                      <span style={{ fontWeight: 900 }}>
+                        {currentUser.personal.patronymic}
+                      </span>
+                    </Typography>
+                    <Typography>
+                      Номер телефона{" "}
+                      <span style={{ fontWeight: 900 }}>
+                        {currentUser.personal.phoneNumber}
+                      </span>
+                    </Typography>
+                  </>
+                ) : (
+                  <Typography>
+                    пользователь не заполнил личные данные
+                  </Typography>
+                )}
+                <div style={{ display: "flex", gap: "5px", marginTop: "10px" }}>
+                  <Button
+                    onClick={async () => {
+                      await orderAdminStore.fetchToSelectRole(
+                        "admin",
+                        currentUser.id
+                      );
+                      handleChangeRole("admin");
+                    }}
+                    variant={
+                      currentUser.role === "admin" ? "contained" : "outlined"
+                    }
+                  >
+                    Администратор
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await orderAdminStore.fetchToSelectRole(
+                        "accounting",
+                        currentUser.id
+                      );
+                      handleChangeRole("accounting");
+                    }}
+                    variant={
+                      currentUser.role === "accounting"
+                        ? "contained"
+                        : "outlined"
+                    }
+                  >
+                    Бухгалтер
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await orderAdminStore.fetchToSelectRole(
+                        "user",
+                        currentUser.id
+                      );
+                      handleChangeRole("user");
+                    }}
+                    variant={
+                      currentUser.role === "user" ? "contained" : "outlined"
+                    }
+                  >
+                    Пользователь
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await orderAdminStore.fetchToSelectRole(
+                        "operator",
+                        currentUser.id
+                      );
+                      handleChangeRole("operator");
+                    }}
+                    variant={
+                      currentUser.role === "operator" ? "contained" : "outlined"
+                    }
+                  >
+                    Оператор
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )
+        )}
+        {/* <div>
 					{currentUser &&
-					(currentUser.role === "accounting" || currentUser.role === "admin") ? (
-						<Typography variant="h4" style={{ fontWeight: 100 }}>
-							Роль этого пользователя не подразумевает наличия заявок
-						</Typography>
-					) : (
+					(currentUser.role === "accounting" || currentUser.role === "admin") ? ( */}
+        <Typography variant="h4" style={{ fontWeight: 100 }}>
+          Измените роль пользователя
+        </Typography>
+        {/* ) : (
 						<>
 							<div style={{ marginBottom: 10, paddingLeft: 10 }}>
 								<FormControl>
@@ -273,8 +293,8 @@ export const UserArea: React.FC<Props> = observer(
 							</div>
 						</>
 					)}
-				</div>
-			</>
-		);
-	}
+				</div> */}
+      </>
+    );
+  }
 );

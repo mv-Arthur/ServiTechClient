@@ -23,87 +23,103 @@ import { operatorStore } from "../store/operatorStore";
 import { Chat, StatusType } from "../models/response/OperatorResponse";
 
 const PrivateRoutes: React.FC = () => {
-	const { store } = useContext(Context);
-	React.useEffect(() => {
-		(async () => {
-			await store.checkAuth();
-			await typeStore.fetchTypes();
-		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+  const { store } = useContext(Context);
+  React.useEffect(() => {
+    (async () => {
+      await store.checkAuth();
+      await typeStore.fetchTypes();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-	React.useEffect(() => {
-		const newSocket = io(API_URL, {
-			auth: {
-				token: localStorage.getItem("token"),
-			},
-		});
-		operatorStore.setSocket(newSocket);
-		operatorStore.socket?.connect();
-		console.log(operatorStore.socket);
-		newSocket.on("connectt", (user) => {
-			console.log("Connected as:", user);
-			// Теперь вы можете использовать данные пользователя в своем приложении
-		});
-		if (operatorStore.socket) {
-			operatorStore.socket.on(
-				"set_status",
-				(payload: { id: number; status: StatusType; message: string }) => {
-					operatorStore.setStatus(payload.id, payload.status, payload.message);
-				}
-			);
+  React.useEffect(() => {
+    const newSocket = io(API_URL, {
+      auth: {
+        token: localStorage.getItem("token"),
+      },
+    });
+    operatorStore.setSocket(newSocket);
+    operatorStore.socket?.connect();
 
-			operatorStore.socket.on("set_price", (payload: { id: number; price: string }) => {
-				// operatorStore.setStatus(payload.id, payload.status, payload.message);
-				operatorStore.setPrice(payload.id, payload.price);
-			});
+    console.log(operatorStore.socket);
+    newSocket.on("connectt", (user) => {
+      console.log("Connected as:", user);
+      // Теперь вы можете использовать данные пользователя в своем приложении
+    });
+    if (operatorStore.socket) {
+      operatorStore.socket.on(
+        "set_status",
+        (payload: { id: number; status: StatusType; message: string }) => {
+          operatorStore.setStatus(payload.id, payload.status, payload.message);
+        }
+      );
 
-			operatorStore.socket.on("send_message", (payload: { orderId: number; chat: Chat }) => {
-				operatorStore.addMessage(payload.orderId, payload.chat);
-				// console.log("dsad");
-			});
+      operatorStore.socket.on(
+        "set_price",
+        (payload: { id: number; price: string }) => {
+          // operatorStore.setStatus(payload.id, payload.status, payload.message);
+          operatorStore.setPrice(payload.id, payload.price);
+        }
+      );
 
-			operatorStore.socket.on(
-				"start_counter",
-				(payload: { orderId: number; countvalue: string }) => {
-					operatorStore.setTime(payload.orderId, payload.countvalue);
-				}
-			);
-		}
-		return () => {
-			newSocket.disconnect();
-		};
-	}, []);
+      operatorStore.socket.on(
+        "send_message",
+        (payload: { orderId: number; chat: Chat }) => {
+          operatorStore.addMessage(payload.orderId, payload.chat);
+          // console.log("dsad");
+        }
+      );
 
-	const choise = (role: RoleType) => {
-		if (role === "user") return <Route path={"/user"} element={<UserPage />} />;
-		if (role === "admin") {
-			(async () => await orderAdminStore.fetchingOrders())();
-			return <Route path={"/user"} element={<AdminPage />} />;
-		}
+      operatorStore.socket.on(
+        "start_counter",
+        (payload: { orderId: number; countvalue: string }) => {
+          operatorStore.setTime(payload.orderId, payload.countvalue);
+        }
+      );
+    }
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
 
-		if (role === "operator") {
-			(async () => await orderAdminStore.fetchingOrders())();
-			return <Route path={"/user"} element={<OperatorPage />} />;
-		}
-		if (role === "accounting") return <Route path={"/user"} element={<AccountingPage />} />;
-	};
+  const choise = (role: RoleType) => {
+    if (role === "user") return <Route path={"/user"} element={<UserPage />} />;
+    if (role === "admin") {
+      (async () => await orderAdminStore.fetchingOrders())();
+      return <Route path={"/user"} element={<AdminPage />} />;
+    }
 
-	return (
-		<div>
-			<CHeader />
-			<Routes>
-				{choise(store.user.role)}
-				<Route path={"/"} element={<LoginPage />} />
-				<Route path={"/office"} element={<Office />} />
-				<Route path="/organization" element={<Organization role={store.user.role} />} />
+    if (role === "operator") {
+      (async () => await orderAdminStore.fetchingOrders())();
+      return <Route path={"/user"} element={<OperatorPage />} />;
+    }
+    if (role === "accounting")
+      return <Route path={"/user"} element={<AccountingPage />} />;
+  };
 
-				<Route path={"/types"} element={<TypesPage isAdmin={store.user.role === "admin"} />} />
-				<Route path="/order/:id" element={<FullOrder />} />
-				{store.user.role === "admin" && <Route path="/types/:id" element={<FullType />} />}
-			</Routes>
-		</div>
-	);
+  return (
+    <div>
+      <CHeader />
+      <Routes>
+        {choise(store.user.role)}
+        <Route path={"/"} element={<LoginPage />} />
+        <Route path={"/office"} element={<Office />} />
+        <Route
+          path="/organization"
+          element={<Organization role={store.user.role} />}
+        />
+
+        <Route
+          path={"/types"}
+          element={<TypesPage isAdmin={store.user.role === "admin"} />}
+        />
+        <Route path="/order/:id" element={<FullOrder />} />
+        {store.user.role === "admin" && (
+          <Route path="/types/:id" element={<FullType />} />
+        )}
+      </Routes>
+    </div>
+  );
 };
 
 export default observer(PrivateRoutes);

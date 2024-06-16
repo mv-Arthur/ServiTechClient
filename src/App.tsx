@@ -8,27 +8,29 @@ import { useNavigate } from "react-router-dom";
 import { accStore } from "./store/accStore";
 import { API_URL } from "./http";
 import { io, Socket } from "socket.io-client";
+import { operatorStore } from "./store/operatorStore";
 
 function App() {
-	const { store } = useContext(Context);
-	const navigate = useNavigate();
-	React.useEffect(() => {
-		if (localStorage.getItem("token")) {
-			(async () => {
-				await store.checkAuth();
-				await accStore.fetchOrg(1);
-				navigate("/office");
-			})();
-		}
+  const { store } = useContext(Context);
+  const navigate = useNavigate();
+  React.useEffect(() => {
+    if (localStorage.getItem("token")) {
+      (async () => {
+        await store.checkAuth();
+        await accStore.fetchOrg(1);
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+        navigate("/office");
+      })();
+    }
 
-	return (
-		<SnackbarProvider maxSnack={1} className="App">
-			<CustomRouter isAuth={store.isAuth} />
-		</SnackbarProvider>
-	);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <SnackbarProvider maxSnack={1} className="App">
+      <CustomRouter isAuth={store.isAuth} />
+    </SnackbarProvider>
+  );
 }
 
 export default observer(App);
