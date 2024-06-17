@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/ServiTechClient/static/css/main.7cc8270d.css",
-    "main.js": "/ServiTechClient/static/js/main.98fcdded.js",
+    "main.js": "/ServiTechClient/static/js/main.0edac67d.js",
     "static/js/453.258b012d.chunk.js": "/ServiTechClient/static/js/453.258b012d.chunk.js",
     "static/media/nothinkClient.png": "/ServiTechClient/static/media/nothinkClient.104acec9704b2eda2253.png",
     "static/media/unauthtorizeImg.png": "/ServiTechClient/static/media/unauthtorizeImg.1855462320e7d6520efe.png",
@@ -10,11 +10,11 @@
     "static/media/defaultAvatar.jpg": "/ServiTechClient/static/media/defaultAvatar.c5fcdcca7a1bd20d42a4.jpg",
     "index.html": "/ServiTechClient/index.html",
     "main.7cc8270d.css.map": "/ServiTechClient/static/css/main.7cc8270d.css.map",
-    "main.98fcdded.js.map": "/ServiTechClient/static/js/main.98fcdded.js.map",
+    "main.0edac67d.js.map": "/ServiTechClient/static/js/main.0edac67d.js.map",
     "453.258b012d.chunk.js.map": "/ServiTechClient/static/js/453.258b012d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.7cc8270d.css",
-    "static/js/main.98fcdded.js"
+    "static/js/main.0edac67d.js"
   ]
 }
