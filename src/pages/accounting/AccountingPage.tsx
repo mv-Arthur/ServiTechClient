@@ -84,7 +84,8 @@ export const AccountingPage = observer(() => {
           </div>
           <div className={classes.right}>
             {right ? (
-              <div>
+              <div ref={printRef}>
+                <Button onClick={handlePrint}>вывести на печать</Button>
                 <TableContainer component={Paper}>
                   Итого к оплате {right.totalEarnings}р
                   <Table sx={{ minWidth: 650 }} aria-label="simple table">
